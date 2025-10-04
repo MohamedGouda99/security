@@ -1,0 +1,82 @@
+﻿name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Deployment environment"
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      ENVIRONMENT: ${{ inputs.environment }}
+      ENV_DIR: infra/envs/${{ inputs.environment }}
+      PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      REGION: ${{ secrets.GCP_REGION }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.TERRAFORM_SA }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Compute image uri
+        id: image
+        run: |
+          IMAGE_URI="${REGION}-docker.pkg.dev/${PROJECT_ID}/chatbot-models-${ENVIRONMENT}/chatbot:${GITHUB_SHA}"
+          echo "image_uri=${IMAGE_URI}" >> $GITHUB_OUTPUT
+
+      - name: Build and push container with Cloud Build
+        run: gcloud builds submit app --tag ${{ steps.image.outputs.image_uri }}
+
+      - name: Write tfvars (dev)
+        if: env.ENVIRONMENT == 'dev'
+        working-directory: ${{ env.ENV_DIR }}
+        run: |
+          cat <<'EOF' > terraform.tfvars
+          ${{ secrets.TF_VARS_DEV }}
+          EOF
+
+      - name: Write tfvars (prod)
+        if: env.ENVIRONMENT == 'prod'
+        working-directory: ${{ env.ENV_DIR }}
+        run: |
+          cat <<'EOF' > terraform.tfvars
+          ${{ secrets.TF_VARS_PROD }}
+          EOF
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: Terraform Init
+        working-directory: ${{ env.ENV_DIR }}
+        run: terraform init -input=false
+
+      - name: Terraform Apply
+        working-directory: ${{ env.ENV_DIR }}
+        run: terraform apply -input=false -auto-approve -var="cloud_run_image=${{ steps.image.outputs.image_uri }}"
+
+      - name: Smoke test endpoint
+        run: |
+          URL=$(terraform -chdir=${ENV_DIR} output -raw cloud_run_url)
+          curl --fail --retry 5 --retry-delay 5 "$URL/health"

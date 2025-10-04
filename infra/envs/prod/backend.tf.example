@@ -1,0 +1,7 @@
+﻿# Rename this file to backend.tf and update with your bootstrap state bucket details.
+terraform {
+  backend "gcs" {
+    bucket = "REPLACE_WITH_STATE_BUCKET"
+    prefix = "terraform/state/prod"
+  }
+}

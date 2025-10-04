@@ -1,0 +1,12 @@
+﻿apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: GCPTerraformValidatorConstraintV1
+metadata:
+  name: disallow-public-sql
+spec:
+  severity: high
+  match:
+    target: ["organizations/*"]
+  parameters:
+    methods: ["create", "update"]
+    resource: "google_sql_database_instance"
+    denyPublicIp: true

@@ -1,0 +1,10 @@
+﻿project_id               = "my-dev-project"
+region                   = "us-central1"
+github_repositories      = ["my-org/my-repo"]
+dataset_bucket_name      = "my-dev-chatbot-datasets"
+archive_bucket_name      = "my-dev-chatbot-logs"
+cloud_run_image          = "us-central1-docker.pkg.dev/my-dev-project/chatbot-models-dev/chatbot:latest"
+security_scanner_target  = null
+labels = {
+  owner = "platform"
+}

@@ -1,0 +1,1 @@
+﻿Placeholder for shared configuration (providers, state) if needed in future iterations.

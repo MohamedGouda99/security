@@ -1,0 +1,53 @@
+# Node.js / frontend
+app/node_modules/
+app/dist/
+app/.next/
+app/.nuxt/
+app/.cache/
+app/npm-debug.log*
+app/yarn-debug.log*
+app/yarn-error.log*
+app/pnpm-debug.log*
+app/.env
+app/.env.*
+
+# Python / virtual environments
+app/.venv/
+app/venv/
+app/__pycache__/
+app/.pytest_cache/
+app/.mypy_cache/
+
+# Terraform
+**/.terraform/
+**/.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.*
+*.tfstate.backup
+crash.log
+crash.*.log
+
+# Generated security artifacts
+reports/
+artifacts/
+
+# IDE / editor noise
+.vscode/
+.idea/
+*.code-workspace
+.DS_Store
+Thumbs.db
+
+# Secrets & certificates
+*.pem
+*.key
+*.crt
+*.pfx
+
+# Temporary files
+*.log
+*.tmp
+*.swp
+~$*
+infra/envs/prod/.venv/
+.venv/
