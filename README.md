@@ -83,3 +83,5 @@ Reports land in `reports/` and are git-ignored.
 4. Run security automation before commits or CI runs.
 
 Feel free to customize documentation and deck styling, or expand automation scripts to match production workflows.
+
+..
