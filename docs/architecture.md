@@ -19,7 +19,7 @@ flowchart LR
             SubApp[App Subnet]
             SubData[Data Subnet]
             NAT[Cloud NAT]
-            PSC[Private Service Connect]
+            PSCNode[Private Service Connect]
         end
 
         subgraph Runtime["App Runtime"]
@@ -35,13 +35,13 @@ flowchart LR
             Training[Vertex Training Jobs]
             Registry[Model Registry]
             Feature[Feature Store]
-            Storage[Cloud Storage (Artifacts and Datasets)]
-            BQ[BigQuery (Analytics)]
+            Storage["Cloud Storage &#40;Artifacts and Datasets&#41;"]
+            BQ["BigQuery &#40;Analytics&#41;"]
         end
 
         subgraph Data["State and Services"]
-            SQL[Cloud SQL or Firestore (Optional)]
-            Cache[Cloud Memorystore (Optional)]
+            SQL["Cloud SQL or Firestore &#40;Optional&#41;"]
+            Cache["Cloud Memorystore &#40;Optional&#41;"]
         end
 
         subgraph Observability["Monitoring and IR"]
@@ -84,6 +84,6 @@ flowchart LR
     Data --> Logging
 
     NAT --> GKE
-    PSC --> VertexSvc
+    PSCNode --> VertexSvc
     Secret --> Runtime
     Armor --> reCAPTCHA[[reCAPTCHA Enterprise]]
